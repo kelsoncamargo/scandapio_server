@@ -1,0 +1,26 @@
+// DEFAULT ROUTE
+// METHOD POST
+http://localhost:3000/api/auth/login
+
+// 401 - without password
+
+curl --location 'http://localhost:3000/api/auth/login' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email":"contato@teste.com.br"
+}'
+
+// 401 - wrong password
+
+curl --location 'http://localhost:3000/api/auth/login' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email":"contato@teste.com.br",
+    "password": "123"
+}'
+
+// 200
+{
+    "email":"contato@teste.com.br",
+    "password": "1234"
+}

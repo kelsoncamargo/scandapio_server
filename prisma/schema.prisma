@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id           String     @id @default(cuid())
+  name         String
+  documentId   String     @unique
+  companyType  String
+  logoUrl      String?
+  menus        Menu[]
+  orders       Order[]
+  sectors      Sector[]
+  users        User[]
+  catalogItems MenuItem[]
+  Log          Log[]
+  createdAt    DateTime?  @default(now())
+  updatedAt    DateTime?  @updatedAt
+}
+
+model User {
+  id                String   @id @default(cuid())
+  email             String
+  password          String
+  name              String
+  role              Role     @default(STAFF)
+  companyId         String
+  documentIdCompany String
+  company           Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  Log               Log[]
+
+  @@index([documentIdCompany, email])
+}
+
+model Sector {
+  id        String   @id @default(cuid())
+  name      String
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  menus     Menu[]
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Menu {
+  id          String           @id @default(cuid())
+  name        String
+  description String?
+  sectorId    String
+  sector      Sector           @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+  items       MenuItemOnMenu[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  Company     Company?         @relation(fields: [companyId], references: [id])
+  companyId   String?
+}
+
+model MenuItem {
+  id          String           @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  imageUrl    String?
+  companyId   String
+  company     Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  menus       MenuItemOnMenu[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  OrderItem   OrderItem[]
+}
+
+model MenuItemOnMenu {
+  id          String   @id @default(cuid())
+  menuId      String
+  itemId      String
+  customPrice Float?
+  menu        Menu     @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  item        MenuItem @relation(fields: [itemId], references: [id])
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  status    OrderStatus @default(PENDING)
+  notes     String?
+  sectorId  String
+  sector    Sector      @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+  companyId String
+  company   Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  items     OrderItem[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model OrderItem {
+  id       String   @id @default(cuid())
+  orderId  String
+  itemId   String
+  quantity Int      @default(1)
+  order    Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  item     MenuItem @relation(fields: [itemId], references: [id])
+}
+
+model Log {
+  id          String   @id @default(cuid())
+  action      String // e.g., "CREATE", "UPDATE", "DELETE"
+  entity      String // e.g., "Menu", "Order", "MenuItem"
+  entityId    String
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  description String?
+  createdAt   DateTime @default(now())
+}
+
+enum OrderStatus {
+  PENDING
+  IN_PROGRESS
+  READY
+  DELIVERED
+  COMPLETED
+  CANCELLED
+}
+
+enum Role {
+  ADMIN
+  STAFF
+  VIEWER
+}
