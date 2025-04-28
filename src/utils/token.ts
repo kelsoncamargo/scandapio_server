@@ -11,8 +11,8 @@ import { validateErrorType } from "./validateErrorType";
 const secretKey = "lasjhusagdfiusufdgisyfffuiasyfiuysaiuyfsad";
 const iat = Math.floor(Date.now() / 1000) + 60 * 360;
 
-const generateToken = ({ id, role, email, }: IUserProps) => {
-  return jwt.sign({ id, email, role, iat }, secretKey);
+const generateToken = ({ companyDocument, role, email, }: IUserProps) => {
+  return jwt.sign({ companyDocument, email, role, iat }, secretKey);
 };
 
 const validateToken = async ({ token }: ITokenProps): Promise<ITokenDecoded> => {

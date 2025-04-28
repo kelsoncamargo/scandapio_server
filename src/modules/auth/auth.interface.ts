@@ -1,24 +1,14 @@
 import { Role } from "@prisma/client";
 
-export interface IRegisterCompany {
-  name: string;
-  documentId: string;
-  companyType: string;
+export interface IUpdateCompany {
+  id: string;
+  newName?: string;
+  newDocumentId?: string;
+  newCompanyType?: string;
 }
 
-export interface IRegisterUser {
-  name: string;
-  email: string;
-  password: string;
-  role: Role;
-  documentIdCompany: string;
-}
 
-export interface IRegisterUserDto {
-  name: string;
-  email: string;
-  role: Role;
-}
+
 
 export interface ILoginUser {
   email: string;

@@ -11,7 +11,7 @@ model Company {
   id           String     @id @default(cuid())
   name         String
   documentId   String     @unique
-  companyType  String
+  companyType  String?
   logoUrl      String?
   menus        Menu[]
   orders       Order[]
@@ -29,9 +29,8 @@ model User {
   password          String
   name              String
   role              Role     @default(STAFF)
-  companyId         String
   documentIdCompany String
-  company           Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company           Company  @relation(fields: [documentIdCompany], references: [id], onDelete: Cascade)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   Log               Log[]
@@ -131,6 +130,7 @@ enum OrderStatus {
 }
 
 enum Role {
+  OWNER
   ADMIN
   STAFF
   VIEWER

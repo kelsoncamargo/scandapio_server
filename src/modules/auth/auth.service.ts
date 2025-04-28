@@ -32,7 +32,7 @@ export class RegisterServiceCompany {
   }
 }
 
-export class RegisterServiceUser {
+export class UserService {
   async register({
     documentIdCompany,
     email,
@@ -50,9 +50,7 @@ export class RegisterServiceUser {
       role
     });
   }
-}
 
-export class LoginServiceUser {
   async login({
     documentIdCompany,
     email,
@@ -71,6 +69,7 @@ export class LoginServiceUser {
     throw new Error(MessageMap.ERROR.EMAIL_OR_PASSWORD_INCORRECT);
   }
 }
+
 
 export class UpdateServiceUser {
   async update({ id, email, name, password, role }: IUpdateUser) {

@@ -9,37 +9,10 @@ import {
   IRegisterCompany,
   IRegisterUser,
   IRegisterUserDto,
+  IUpdateCompany,
   IUpdateUser,
   IUpdateUserDto
 } from "./auth.interface";
-
-export const registerCompany = async ({
-  documentId,
-  name,
-  companyType,
-}: IRegisterCompany): Promise<any> => {
-  try {
-    const company = await database.company.findUnique({
-      where: { documentId: documentId },
-    });
-
-    if (company) {
-      throw new Error(MessageMap.ERROR.COMPANY.STATUS.REGISTER);
-    }
-
-    await database.company.create({
-      data: {
-        documentId,
-        name,
-        companyType,
-      },
-    });
-    return MessageMap.SUCCESS.COMPANY.SUCESS_MESSAGE.REGISTER;
-  } catch (err) {
-    validateErrorType(err);
-    throw new Error(MessageMap.ERROR.SYSTEM.DATABASE);
-  }
-};
 
 export const registerUser = async ({
   documentIdCompany,

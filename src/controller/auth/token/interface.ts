@@ -14,7 +14,7 @@ export interface ITokenDecoded {
 }
 
 export interface IUserProps {
-  id: string;
+  documentCompany: string;
   email: string;
   role: AccountRole;
 }
