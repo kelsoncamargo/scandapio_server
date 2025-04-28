@@ -1,4 +1,23 @@
-import { MessageMap } from "../../../utils/message";
+/**
+ * CompanyRepository
+ * 
+ * Repository class responsible for managing Company-related database operations.
+ * 
+ * Methods:
+ * 
+ * - findCompanyByDocumentId(documentId: string): Promise<true | false>
+ *   => Searches for a company by its document ID.
+ *   => Returns `true` if the company exists, otherwise `false`.
+ *   => Throws an error with MessageMap.ERROR.REPO.DATABASE on failure.
+ * 
+ * - createCompany({ documentId, name }: IRegisterCompany): Promise<IRegisterCompanyDto>
+ *   => Creates a new company record with provided document ID and name.
+ *   => Returns a success message defined in MessageMap.SUCCESS.REPO.REGISTER.
+ *   => Throws an error with MessageMap.ERROR.REPO.DATABASE on failure.
+ *
+ */
+
+import { MessageMap } from "../../../shared/messages";
 import database from "../../../config/database";
 import {
   IRegisterCompany,
@@ -14,7 +33,7 @@ export class CompanyRepository {
 
       return company ? true : false;
     } catch (err) {
-      throw new Error(MessageMap.ERROR.SYSTEM.DATABASE);
+      throw new Error(MessageMap.ERROR.REPO.DATABASE);
     }
   }
 
@@ -30,9 +49,9 @@ export class CompanyRepository {
         },
       });
 
-      return { message: MessageMap.SUCCESS.COMPANY.SUCESS_MESSAGE.REGISTER };
+      return { message: MessageMap.SUCCESS.REPO.REGISTER };
     } catch (err) {
-      throw new Error(MessageMap.ERROR.SYSTEM.DATABASE);
+      throw new Error(MessageMap.ERROR.REPO.DATABASE);
     }
   };
 }

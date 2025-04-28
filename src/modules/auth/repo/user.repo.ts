@@ -1,10 +1,27 @@
-import { MessageMap } from "../../../utils/message";
+/**
+ * RegisterUserRepository
+ * 
+ * Repository class responsible for managing User registration-related database operations.
+ * 
+ * Methods:
+ * 
+ * - findUserByEmail(email: string, documentIdCompany: string): Promise<true | false>
+ *   => Searches for a user by email and associated company document ID.
+ *   => Returns `true` if the user exists, otherwise `false`.
+ *   => Throws an error with MessageMap.ERROR.REPO.DATABASE on failure.
+ * 
+ * - createUser({ documentIdCompany, email, name, password, role }: IRegisterUser): Promise<IRegisterUserDto>
+ *   => Creates a new user associated with a company.
+ *   => Returns selected user fields (documentIdCompany, name, email, role).
+ *   => Throws an error with MessageMap.ERROR.REPO.DATABASE on failure.
+ * 
+ */
+import { MessageMap } from "../../../shared/messages";
 import database from "../../../config/database";
 import {
   IRegisterUser,
   IRegisterUserDto,
 } from "../interface/user.interface";
-
 
 export class RegisterUserRepository {
   async findUserByEmail(email: string, documentIdCompany: string): Promise<true | false> {
@@ -15,7 +32,7 @@ export class RegisterUserRepository {
 
       return user ? true : false;
     } catch (err) {
-      throw new Error(MessageMap.ERROR.SYSTEM.DATABASE);
+      throw new Error(MessageMap.ERROR.REPO.DATABASE);
     }
   }
 
@@ -43,7 +60,7 @@ export class RegisterUserRepository {
         },
       });
     } catch (err) {
-      throw new Error(MessageMap.ERROR.SYSTEM.DATABASE);
+      throw new Error(MessageMap.ERROR.REPO.DATABASE);
     }
   };
 }
