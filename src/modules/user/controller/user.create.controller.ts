@@ -1,0 +1,49 @@
+/**
+ * create
+ *
+ * Express handler to register a new user.
+ *
+ * @param {Request}  request  - Express request containing user data in body:
+ *                              • name: string
+ *                              • email: string
+ *                              • password: string
+ *                              • role: Role
+ *                              • documentIdCompany: string
+ * @param {Response} response - Express response object.
+ * @returns {Promise<Response>} - On success, sends 200 OK with:
+ *                                • message: SUCCESS.REPO.REGISTER
+ *                                • user data (documentIdCompany, email, name, role)
+ * @throws {Error}            - On validation or creation failure:
+ *                                responds with 400 Bad Request and error message
+ */
+
+import { Request, Response } from "express";
+import { MessageMap } from "../../../shared/messages";
+import { userService } from "../service/user.service";
+
+export const create = async (
+  request: Request,
+  response: Response
+) => {
+  try {
+    const reqData = request.body;
+
+    const userData = {
+      name: reqData.name,
+      email: reqData.email,
+      password: reqData.password,
+      role: reqData.role,
+      documentIdCompany: reqData.documentIdCompany
+    };
+
+    const user = await userService.create(userData);
+
+    return response.send({
+      message: MessageMap.SUCCESS.REPO.REGISTER,
+      ...user
+    });
+
+  } catch (error: any) {
+    return response.status(400).send({ message: error.message });
+  }
+}

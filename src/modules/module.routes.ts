@@ -1,9 +1,9 @@
-import express, { Request, Response } from "express";
-import authRouter from "./auth/auth.routes";
+import express from "express";
+import userRouter from "./user/user.routes";
 
 
 const moduleRouter = express.Router();
 
-moduleRouter.post("/", authRouter);
+moduleRouter.use("/", userRouter);
 
 export default moduleRouter;

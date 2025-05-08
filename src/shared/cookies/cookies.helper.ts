@@ -19,7 +19,7 @@ dotenv.config();
 const isProduction = process.env.PRODUCTION === "true"
 
 export const setAuthCookies = (res: Response, accessToken: string, refreshToken: string) => {
-  res.cookie('acessToken', accessToken, {
+  res.cookie('accessToken', accessToken, {
     httpOnly: true,
     secure: isProduction,
     sameSite: 'strict',

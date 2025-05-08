@@ -8,34 +8,116 @@ datasource db {
 }
 
 model Company {
-  id           String     @id @default(cuid())
-  name         String
-  documentId   String     @unique
-  companyType  String?
-  logoUrl      String?
-  menus        Menu[]
-  orders       Order[]
-  sectors      Sector[]
-  users        User[]
-  catalogItems MenuItem[]
-  Log          Log[]
-  createdAt    DateTime?  @default(now())
-  updatedAt    DateTime?  @updatedAt
+  id                  String               @id @default(cuid())
+  isActive            CompanyStatus        @default(ACTIVE)
+  name                String
+  documentId          String               @unique
+  companyType         String
+  logoUrl             String?
+  menus               Menu[]
+  orders              Order[]
+  sectors             Sector[]
+  users               User[]
+  catalogItems        MenuItem[]
+  Log                 Log[]
+  createdAt           DateTime?            @default(now())
+  updatedAt           DateTime?            @updatedAt
+  CompanyLicense      CompanyLicense       @relation(fields: [companyLicenseId], references: [id])
+  companyLicenseId    String               @unique
+  PaymentSubscription PaymentSubscription?
+  CompanyPlan         CompanyPlan?
+}
+
+model CompanyLicense {
+  id              String        @id @default(cuid())
+  name            License       @unique
+  description     String?
+  canAccessOrders Boolean
+  maxUsers        Int
+  maxMenus        Int
+  maxItems        Int
+  priceMonthly    Int
+  apiAccess       Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+  Company         Company[]
+  CompanyPlan     CompanyPlan[]
+}
+
+model CompanyPlan {
+  id        String  @id @default(cuid())
+  companyId String  @unique
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  licenseName License
+  license     CompanyLicense @relation(fields: [licenseName], references: [name])
+
+  customMaxUsers      Int?
+  customMaxMenus      Int?
+  customPrice         Int?
+  startedAt           DateTime              @default(now())
+  expiresAt           DateTime?
+  createdAt           DateTime              @default(now())
+  PaymentSubscription PaymentSubscription[]
+}
+
+model PaymentSubscription {
+  id        String  @id @default(cuid())
+  companyId String  @unique
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  planId String
+  plan   CompanyPlan @relation(fields: [planId], references: [id])
+
+  billingStatus  BillingStatus    @default(PENDING)
+  priceCents     Int
+  currency       String           @default("BRL")
+  startedAt      DateTime         @default(now())
+  nextBillingAt  DateTime
+  trialEndsAt    DateTime?
+  canceledAt     DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  PaymentInvoice PaymentInvoice[]
+}
+
+model PaymentInvoice {
+  id             String              @id @default(cuid())
+  subscriptionId String
+  subscription   PaymentSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  amountCents Int
+  paid        Boolean   @default(false)
+  paidAt      DateTime?
+  dueAt       DateTime
+  externalId  String? // ID do Stripe, Asaas, MercadoPago etc.
+  createdAt   DateTime  @default(now())
 }
 
 model User {
-  id                String   @id @default(cuid())
+  id                String         @id @default(cuid())
   email             String
   password          String
   name              String
-  role              Role     @default(STAFF)
+  role              Role           @default(STAFF)
   documentIdCompany String
-  company           Company  @relation(fields: [documentIdCompany], references: [id], onDelete: Cascade)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  company           Company        @relation(fields: [documentIdCompany], references: [documentId], onDelete: Cascade)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
   Log               Log[]
+  RefreshToken      RefreshToken[]
 
+  @@unique([email, documentIdCompany], name: "email_documentIdCompany")
   @@index([documentIdCompany, email])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Sector {
@@ -47,6 +129,8 @@ model Sector {
   orders    Order[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([companyId, name], name: "unique_sector_name_per_company")
 }
 
 model Menu {
@@ -60,6 +144,8 @@ model Menu {
   updatedAt   DateTime         @updatedAt
   Company     Company?         @relation(fields: [companyId], references: [id])
   companyId   String?
+
+  @@unique([sectorId, name], name: "unique_menu_name_per_sector")
 }
 
 model MenuItem {
@@ -74,6 +160,8 @@ model MenuItem {
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
   OrderItem   OrderItem[]
+
+  @@unique([companyId, name], name: "unique_item_name_per_company")
 }
 
 model MenuItemOnMenu {
@@ -83,6 +171,8 @@ model MenuItemOnMenu {
   customPrice Float?
   menu        Menu     @relation(fields: [menuId], references: [id], onDelete: Cascade)
   item        MenuItem @relation(fields: [itemId], references: [id])
+
+  @@unique([menuId, itemId], name: "unique_menu_item_per_menu")
 }
 
 model Order {
@@ -96,6 +186,8 @@ model Order {
   items     OrderItem[]
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+
+  @@index([status], name: "idx_order_status")
 }
 
 model OrderItem {
@@ -118,6 +210,8 @@ model Log {
   company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   description String?
   createdAt   DateTime @default(now())
+
+  @@index([entity, companyId], name: "idx_log_entity_company")
 }
 
 enum OrderStatus {
@@ -134,4 +228,25 @@ enum Role {
   ADMIN
   STAFF
   VIEWER
+}
+
+enum License {
+  BASIC
+  PROFESSIONAL
+  BUSINESS
+}
+
+enum BillingStatus {
+  ACTIVE
+  PENDING
+  TRIAL
+  CANCELED
+  EXPIRED
+}
+
+enum CompanyStatus {
+  ACTIVE
+  TRIAL
+  INACTIVE
+  SUSPENDED
 }
