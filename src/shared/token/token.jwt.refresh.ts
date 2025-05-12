@@ -31,15 +31,17 @@
 import jwt from "jsonwebtoken";
 import { IJwtPayload } from "./token.jwt.interface";
 import dotenv from "dotenv";
-import { MessageMap } from "../messages";
 import { Prisma } from "@prisma/client";
 import crypto from "crypto";
 import database from "../../config/database";
+import { MessageMap } from "../messages";
 
 dotenv.config();
 
 const isProduction = process.env.PRODUCTION === "true"
-const secret = (isProduction ? process.env.JWT_SECRET_REFRESH : process.env.JWT_SECRET_DEV_REFRESH) as string;
+const secret = (isProduction
+  ? process.env.JWT_SECRET_REFRESH
+  : process.env.JWT_SECRET_DEV_REFRESH) as string;
 
 if (!secret) {
   throw new Error(MessageMap.ERROR.SHARED.TOKEN.NO_SECRET);
@@ -98,8 +100,8 @@ export const revokeRefreshToken = async (token: string) => {
     return true;
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
-      return false;
+      throw new Error(MessageMap.ERROR.SHARED.TOKEN.INVALID);
     }
-    throw new Error(MessageMap.ERROR.REPO.DATABASE);
+    throw new Error(MessageMap.ERROR.MODULE.DATABASE);
   }
 }

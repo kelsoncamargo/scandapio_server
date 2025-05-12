@@ -105,6 +105,7 @@ model User {
   updatedAt         DateTime       @updatedAt
   Log               Log[]
   RefreshToken      RefreshToken[]
+  isActive          Boolean
 
   @@unique([email, documentIdCompany], name: "email_documentIdCompany")
   @@index([documentIdCompany, email])

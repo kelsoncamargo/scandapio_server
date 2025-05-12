@@ -58,6 +58,11 @@ export const MessageMap = {
       LOGIN: {
         INCORRECT: "email_password_incorrect",
       }
+    },
+    MIDDLEWARE: {
+      AUTH: {
+        UNAUTHORIZED: "Invalid_or_inactive_user"
+      }
     }
   },
   SUCCESS: {

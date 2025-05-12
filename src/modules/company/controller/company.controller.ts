@@ -15,10 +15,10 @@ import { Request, Response } from "express";
 import { ServiceCompany } from "../service/comapany.service";
 import { userService } from "../../user/service/user.service";
 import { Role } from "@prisma/client";
-import { generateToken } from "../../../shared/token/token.jwt";
-import { generateRefreshToken } from "../../../shared/token/token.jwt.refresh";
 import { setAuthCookies } from "../../../shared/cookies/cookies.helper";
 import { MessageMap } from "../../../shared/messages";
+import { generateToken } from "../../../utils/token";
+import { generateRefreshToken } from "../../../shared/token/token.jwt.refresh";
 
 export class ControllerCompany {
   private companyServive = new ServiceCompany();

@@ -6,19 +6,22 @@
  * 
  * Functions:
  * - generateToken(payload: IJwtPayload): string
- * - validateToken(token: string): IJwtPayload
+ * - verifyToken(token: string): IJwtPayload
  */
 import jwt from "jsonwebtoken";
 import { IJwtPayload } from "./token.jwt.interface";
 import dotenv from "dotenv";
+import { MessageMap } from "../messages";
 
 dotenv.config();
 
 const isProduction = process.env.PRODUCTION === "true"
-const secret = (isProduction ? process.env.JWT_SECRET : process.env.JWT_SECRET_DEV) as string;
+const secret = (isProduction
+  ? process.env.JWT_SECRET
+  : process.env.JWT_SECRET_DEV) as string;
 
 if (!secret) {
-  throw new Error("JWT_SECRET environment variable not set.");
+  throw new Error(MessageMap.ERROR.SHARED.TOKEN.NO_SECRET);
 }
 
 export const generateToken = (payload: IJwtPayload): string => {
@@ -28,10 +31,10 @@ export const generateToken = (payload: IJwtPayload): string => {
   });
 };
 
-export const validateToken = (token: string): IJwtPayload => {
+export const verifyToken = (token: string): IJwtPayload => {
   try {
     return jwt.verify(token, secret) as IJwtPayload;
   } catch (error) {
-    throw new Error("Invalid token");
+    throw new Error(MessageMap.ERROR.SHARED.TOKEN.INVALID);
   }
 };
