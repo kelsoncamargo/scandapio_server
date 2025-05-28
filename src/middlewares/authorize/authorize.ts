@@ -1,36 +1,28 @@
-// src/auth/middleware/authorize.ts
-
-import { Request, Response, NextFunction } from "express";
-import { Permission, rolePermissions } from "../permissions/permissions";
-import { IJwtPayload } from "../../shared/token/token.jwt.interface";
-
-/**
- * AuthRequest
- * @extends Request
- * @property {IJwtPayload} user — payload decodificado do JWT
- */
-export interface AuthRequest extends Request {
-  user: IJwtPayload;
-}
-
 /**
  * authorize
  *
  * Middleware factory that checks whether req.user.role
  * has the required permission.
  *
- * @param {Permission} required — permissão no formato "recurso:ação"
- * @returns {(req: AuthRequest, res: Response, next: NextFunction) => void}
- * @throws Quando req.user não tiver a permissão necessária (resposta HTTP 403)
+ * @param {Permission} required            - Permission in the format "resource:action"
+ * @returns {import("express").RequestHandler}  
+ *   Express middleware function (req, res, next).
+ * @throws {403}                          - If req.user.role does not have the required permission.
+ *
+ * @typedef {import("express").Request & { user: IJwtPayload }} AuthRequest
  */
+
+import { Response, NextFunction } from "express";
+import { Permission, rolePermissions } from "../permissions/permissions";
+import { MessageMap } from "../../shared/messages";
+import { AuthRequest } from "../../types/authRequest.type";
+
 export function authorize(required: Permission) {
   const [requiredResource, requiredAction] = required.split(":");
 
   return (req: AuthRequest, res: Response, next: NextFunction): void => {
-    // Lista de permissões do papel (role) ou array vazio
     const perms = rolePermissions[req.user.role] ?? [];
 
-    // Verifica se existe ao menos uma permissão que case
     const allowed = perms.some((perm) => {
       const [permResource, permAction] = perm.split(":");
 
@@ -43,12 +35,13 @@ export function authorize(required: Permission) {
     });
 
     if (!allowed) {
-      // @throws Forbidden se não autorizado
-      res.status(403).json({ message: "Forbidden" });
+      res.status(403).json({ message: MessageMap.ERROR.MIDDLEWARE.AUTHORIZE.FORBIDDEN });
       return;
     }
 
-    // @returns void e segue o fluxo se autorizado
     next();
   };
 }
+
+authorize("user:*")
+

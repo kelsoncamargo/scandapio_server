@@ -13,9 +13,9 @@
 import { create } from "./user.create.schema";
 import { get } from "./user.get.schema";
 
-class SchemaUser {
+class UserSchema {
   create = create;
   get = get;
 }
 
-export const schemaUser = new SchemaUser();
+export const userSchema = new UserSchema();

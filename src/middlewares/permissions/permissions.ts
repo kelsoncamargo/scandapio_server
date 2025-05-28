@@ -1,3 +1,13 @@
+/**
+ * @module permissions
+ * @description Maps each user role to its corresponding set of permissions.
+ *
+ * This constant ensures that every Role enum value has an explicit array of
+ * Permission strings defining allowed operations in the application.
+ *
+ * @constant {Record<Role, Permission[]>} rolePermissions
+ */
+
 import { Role } from "@prisma/client";
 
 export type Permission = `${string}:${string}`;

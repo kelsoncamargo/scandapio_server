@@ -1,12 +1,20 @@
 /**
- * Token Utilities
- * 
- * Provides functions to generate and validate JWT tokens.
- * Requires environment variables: PRODUCTION, JWT_SECRET, JWT_SECRET_DEV.
- * 
- * Functions:
- * - generateToken(payload: IJwtPayload): string
- * - verifyToken(token: string): IJwtPayload
+ * @module token.utils
+ * @description Provides utilities for generating and verifying JSON Web Tokens (JWT) with HS256 algorithm, using environment-based secrets.
+ *
+ * Requires environment variables:
+ * - PRODUCTION: set to "true" for production mode.
+ * - JWT_SECRET: secret key for production.
+ * - JWT_SECRET_DEV: secret key for development.
+ *
+ * @function generateToken
+ * @param {import("./token.jwt.interface").IJwtPayload} payload – The JWT payload to sign.
+ * @returns {string} A signed JWT string with 1 hour expiration.
+ *
+ * @function verifyToken
+ * @param {string} token – The JWT string to verify and decode.
+ * @returns {import("./token.jwt.interface").IJwtPayload} The decoded JWT payload.
+ * @throws {Error} If the token is invalid or verification fails.
  */
 import jwt from "jsonwebtoken";
 import { IJwtPayload } from "./token.jwt.interface";

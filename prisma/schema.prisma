@@ -8,11 +8,11 @@ datasource db {
 }
 
 model Company {
-  id                  String               @id @default(cuid())
-  isActive            CompanyStatus        @default(ACTIVE)
+  id                  String               @id @default(uuid())
+  isActive            CompanyStatus        @default(INACTIVE)
   name                String
   documentId          String               @unique
-  companyType         String
+  companyType         CompanyType
   logoUrl             String?
   menus               Menu[]
   orders              Order[]
@@ -20,39 +20,37 @@ model Company {
   users               User[]
   catalogItems        MenuItem[]
   Log                 Log[]
-  createdAt           DateTime?            @default(now())
-  updatedAt           DateTime?            @updatedAt
-  CompanyLicense      CompanyLicense       @relation(fields: [companyLicenseId], references: [id])
-  companyLicenseId    String               @unique
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
   PaymentSubscription PaymentSubscription?
-  CompanyPlan         CompanyPlan?
+  Subscription        Subscription?
 }
 
-model CompanyLicense {
-  id              String        @id @default(cuid())
-  name            License       @unique
+model PlanTemplate {
+  id              String         @id @default(uuid())
+  name            License        @unique
   description     String?
   canAccessOrders Boolean
   maxUsers        Int
   maxMenus        Int
   maxItems        Int
   priceMonthly    Int
-  apiAccess       Boolean       @default(false)
-  createdAt       DateTime      @default(now())
-  Company         Company[]
-  CompanyPlan     CompanyPlan[]
+  apiAccess       Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+  Subscription    Subscription[]
 }
 
-model CompanyPlan {
-  id        String  @id @default(cuid())
+model Subscription {
+  id        String  @id @default(uuid())
   companyId String  @unique
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   licenseName License
-  license     CompanyLicense @relation(fields: [licenseName], references: [name])
+  license     PlanTemplate @relation(fields: [licenseName], references: [name])
 
   customMaxUsers      Int?
   customMaxMenus      Int?
+  custommaxItems      Int?
   customPrice         Int?
   startedAt           DateTime              @default(now())
   expiresAt           DateTime?
@@ -61,12 +59,12 @@ model CompanyPlan {
 }
 
 model PaymentSubscription {
-  id        String  @id @default(cuid())
+  id        String  @id @default(uuid())
   companyId String  @unique
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  planId String
-  plan   CompanyPlan @relation(fields: [planId], references: [id])
+  subscription String
+  Subscription Subscription @relation(fields: [subscription], references: [id])
 
   billingStatus  BillingStatus    @default(PENDING)
   priceCents     Int
@@ -81,7 +79,7 @@ model PaymentSubscription {
 }
 
 model PaymentInvoice {
-  id             String              @id @default(cuid())
+  id             String              @id @default(uuid())
   subscriptionId String
   subscription   PaymentSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
 
@@ -89,26 +87,26 @@ model PaymentInvoice {
   paid        Boolean   @default(false)
   paidAt      DateTime?
   dueAt       DateTime
-  externalId  String? // ID do Stripe, Asaas, MercadoPago etc.
+  externalId  String?
   createdAt   DateTime  @default(now())
 }
 
 model User {
-  id                String         @id @default(cuid())
+  id                String         @id @default(uuid())
   email             String
   password          String
   name              String
   role              Role           @default(STAFF)
-  documentIdCompany String
-  company           Company        @relation(fields: [documentIdCompany], references: [documentId], onDelete: Cascade)
+  documentId String
+  company           Company        @relation(fields: [documentId], references: [documentId], onDelete: Cascade)
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
   Log               Log[]
   RefreshToken      RefreshToken[]
   isActive          Boolean
 
-  @@unique([email, documentIdCompany], name: "email_documentIdCompany")
-  @@index([documentIdCompany, email])
+  @@unique([email, documentId], name: "email_documentId")
+  @@index([documentId, email])
 }
 
 model RefreshToken {
@@ -122,7 +120,7 @@ model RefreshToken {
 }
 
 model Sector {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   name      String
   companyId String
   company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
@@ -135,7 +133,7 @@ model Sector {
 }
 
 model Menu {
-  id          String           @id @default(cuid())
+  id          String           @id @default(uuid())
   name        String
   description String?
   sectorId    String
@@ -150,7 +148,7 @@ model Menu {
 }
 
 model MenuItem {
-  id          String           @id @default(cuid())
+  id          String           @id @default(uuid())
   name        String
   description String?
   price       Float
@@ -166,7 +164,7 @@ model MenuItem {
 }
 
 model MenuItemOnMenu {
-  id          String   @id @default(cuid())
+  id          String   @id @default(uuid())
   menuId      String
   itemId      String
   customPrice Float?
@@ -177,7 +175,7 @@ model MenuItemOnMenu {
 }
 
 model Order {
-  id        String      @id @default(cuid())
+  id        String      @id @default(uuid())
   status    OrderStatus @default(PENDING)
   notes     String?
   sectorId  String
@@ -192,7 +190,7 @@ model Order {
 }
 
 model OrderItem {
-  id       String   @id @default(cuid())
+  id       String   @id @default(uuid())
   orderId  String
   itemId   String
   quantity Int      @default(1)
@@ -201,9 +199,9 @@ model OrderItem {
 }
 
 model Log {
-  id          String   @id @default(cuid())
-  action      String // e.g., "CREATE", "UPDATE", "DELETE"
-  entity      String // e.g., "Menu", "Order", "MenuItem"
+  id          String   @id @default(uuid())
+  action      String
+  entity      String
   entityId    String
   userId      String?
   user        User?    @relation(fields: [userId], references: [id])
@@ -247,7 +245,16 @@ enum BillingStatus {
 
 enum CompanyStatus {
   ACTIVE
-  TRIAL
   INACTIVE
   SUSPENDED
+}
+
+enum CompanyType {
+  RESTAURANT
+  CAFE
+  BAR
+  PUB
+  BISTRO
+  FOOD_TRUCK
+  HOTEL
 }

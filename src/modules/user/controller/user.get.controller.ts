@@ -6,7 +6,7 @@
  * @param {Request}  request  - Express request containing credentials in body:
  *                              • email: string  
  *                              • password: string  
- *                              • documentIdCompany: string
+ *                              • documentId: string
  * @param {Response} response - Express response object.
  * @returns {Promise<Response>} - On success, sends 200 OK with:
  *                                • message: MessageMap.SUCCESS.CONTROLLER.USER.LOGIN  
@@ -30,13 +30,12 @@ export const get = async (
     const credentials = {
       email: reqData.email,
       password: reqData.password,
-      documentIdCompany: reqData.documentIdCompany,
+      documentId: reqData.documentId,
     };
 
     const user = await userService.get(credentials);
 
     return response.send({
-      message: MessageMap.SUCCESS.CONTROLLER.USER.LOGIN,
       ...user
     });
 

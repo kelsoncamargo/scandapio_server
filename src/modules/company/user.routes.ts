@@ -1,9 +1,9 @@
-import express, { Request, Response } from "express";
+import express from "express";
 
-import routerCompany from "./routes/routes.company";
+import routerCompany from "./routes/company.routes";
 
-const userRouter = express.Router();
+const comapnyRouter = express.Router();
 
-userRouter.use("/", routerCompany);
+comapnyRouter.use("/", routerCompany);
 
-export default userRouter;
+export default comapnyRouter;

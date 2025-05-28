@@ -31,11 +31,14 @@ export const MessageMap = {
         }
       },
       COMPANY: {
+        NOT_COMPANY: "company_not_found",
         REPO: {
-          NOT_COMPANY: "company_not_found",
           CREATE: "documentId_already_in_use"
         },
         CONTROLLER: {
+        },
+        SERVICE: {
+          ALREADY_DOCUMENT: "document_already_in_use",
         }
       },
       USER: {
@@ -55,18 +58,28 @@ export const MessageMap = {
           USER: "email_already_in_use"
         }
       },
-      LOGIN: {
+      AUTH: {
         INCORRECT: "email_password_incorrect",
+        FOUND: "not_found_user"
       }
     },
     MIDDLEWARE: {
       AUTH: {
         UNAUTHORIZED: "Invalid_or_inactive_user"
+      },
+      AUTHORIZE: {
+        FORBIDDEN: "forbidden"
+      },
+      COMPANY: {
+        INACTIVE: "company_inactive_or_not_found"
       }
     }
   },
   SUCCESS: {
     MODULE: {
+      AUTH: {
+        LOGIN: "loged_with_success"
+      },
       COMPANY: {
         REPO: {
           REGISTER: "company_and_user_registred_with_sucess"
@@ -83,7 +96,7 @@ export const MessageMap = {
       COMPANY: {
         REGISTER: "company_and_user_registred_with_sucess"
       },
-      USER: {
+      AUTH: {
         LOGIN: "loged_with_success"
       }
     }

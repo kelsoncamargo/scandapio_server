@@ -5,7 +5,7 @@
  * 
  * Methods:
  * 
- * - register({ documentIdCompany, email, name, password, role }: IRegisterUser): Promise<IRegisterUserDto>
+ * - register({ documentId, email, name, password, role }: IRegisterUser): Promise<IRegisterUserDto>
  *   => Checks if a user with the given email already exists in the specified company.
  *   => If the user exists, throws an error (MessageMap.ERROR.REPO.REGISTER.ALREADY.USER).
  *   => If the user does not exist, creates a new user using RegisterUserRepository.

@@ -1,33 +1,27 @@
 /**
- * Refresh Token Utilities
- * 
- * Utility functions to manage secure creation, validation, and revocation of JWT refresh tokens.
- * 
- * Environment Variables:
- * - PRODUCTION: "true" or "false"
- * - JWT_SECRET_REFRESH: Secret key for production refresh tokens
- * - JWT_SECRET_DEV_REFRESH: Secret key for development refresh tokens
- * 
- * Functions:
- * 
- * - generateRefreshToken(payload: IJwtPayload): Promise<string>
- *   => Signs a refresh token (valid for 7 days) using HS256.
- *   => Hashes and stores the token in the database.
- *   => Returns the original (non-hashed) token.
- * 
- * - validateRefreshToken(token: string): Promise<IJwtPayload>
- *   => Verifies token signature and checks if it's stored and not revoked.
- *   => Throws standardized error if token is invalid or not found.
- * 
- * - revokeRefreshToken(token: string): Promise<boolean>
- *   => Hashes and marks the refresh token as revoked in the database.
- *   => Returns `true` if updated; `false` if not found (handled via Prisma error code P2025).
- * 
- * Internals:
- * - hashToken(token: string): string
- *   => Hashes a token using SHA-256 for secure DB storage.
- * 
+ * @module token.utils.refresh
+ * @description Provides utilities for secure creation, validation, and revocation of JWT refresh tokens with HS256 algorithm.
+ *
+ * Requires environment variables:
+ * - PRODUCTION: set to "true" for production mode.
+ * - JWT_SECRET_REFRESH: secret key for production refresh tokens.
+ * - JWT_SECRET_DEV_REFRESH: secret key for development refresh tokens.
+ *
+ * @function generateRefreshToken
+ * @param {import("./token.jwt.interface").IJwtPayload} payload – The JWT payload to sign.
+ * @returns {Promise<string>} A signed refresh token (valid for 7 days) stored in the database in hashed form.
+ *
+ * @function validateRefreshToken
+ * @param {string} token – The refresh token string to verify and decode.
+ * @returns {Promise<import("./token.jwt.interface").IJwtPayload>} The decoded JWT payload if token is valid and not revoked.
+ * @throws {Error} If the token is invalid, expired, not found, or revoked.
+ *
+ * @function revokeRefreshToken
+ * @param {string} token – The refresh token string to revoke.
+ * @returns {Promise<boolean>} Returns `true` if the token was successfully marked as revoked.
+ * @throws {Error} If the token is not found (Prisma P2025) or a database error occurs.
  */
+
 import jwt from "jsonwebtoken";
 import { IJwtPayload } from "./token.jwt.interface";
 import dotenv from "dotenv";

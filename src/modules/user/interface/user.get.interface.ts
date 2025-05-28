@@ -1,12 +1,12 @@
 import { Role } from "@prisma/client";
 
 export interface IGetUser {
-  documentIdCompany: string;
+  documentId: string;
   email: string;
 };
 
 export interface IGetUserDto {
-  documentIdCompany: string;
+  documentId: string;
   name: string;
   email: string;
   role: Role;

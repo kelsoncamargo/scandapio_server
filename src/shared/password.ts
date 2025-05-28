@@ -16,6 +16,6 @@ export const decryptPassword = async (remote: string, local?: string) => {
     if (!local) throw new Error(MessageMap.ERROR.SHARED.PASSWORD.NOT_EXIST);
     return await bcrypt.compare(remote, local);
   } catch (err) {
-    throw new Error(MessageMap.ERROR.SHARED.PASSWORD.COMPARISON_FAILED);
+    return new Error(MessageMap.ERROR.SHARED.PASSWORD.COMPARISON_FAILED);
   }
 };

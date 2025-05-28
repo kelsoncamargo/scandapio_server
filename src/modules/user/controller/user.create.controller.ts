@@ -8,11 +8,11 @@
  *                              • email: string
  *                              • password: string
  *                              • role: Role
- *                              • documentIdCompany: string
+ *                              • documentId: string
  * @param {Response} response - Express response object.
  * @returns {Promise<Response>} - On success, sends 200 OK with:
  *                                • message: SUCCESS.REPO.REGISTER
- *                                • user data (documentIdCompany, email, name, role)
+ *                                • user data (documentId, email, name, role)
  * @throws {Error}            - On validation or creation failure:
  *                                responds with 400 Bad Request and error message
  */
@@ -33,7 +33,7 @@ export const create = async (
       email: reqData.email,
       password: reqData.password,
       role: reqData.role,
-      documentIdCompany: reqData.documentIdCompany
+      documentId: reqData.documentId
     };
 
     const user = await userService.create(userData);

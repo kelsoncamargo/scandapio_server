@@ -3,15 +3,15 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.companyLicense.createMany({
+  await prisma.planTemplate.createMany({
     data: [
       {
         name: 'BASIC',
         description: 'Para pequenos negócios que estão começando.',
-        maxUsers: 1,
+        maxUsers: 2,
         maxMenus: 1,
-        maxItems: 20,
-        priceMonthly: 0,
+        maxItems: 50,
+        priceMonthly: 19.90,
         canAccessOrders: false,
       },
       {

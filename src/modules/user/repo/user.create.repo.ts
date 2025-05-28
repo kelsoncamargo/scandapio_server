@@ -7,12 +7,12 @@
  * 
  * - create(data: ICreateUser): Promise<ICreateUserDto>
  *   → Creates a new user linked to a company.
- *   → Returns an object with selected fields: documentIdCompany, name, email, role.
+ *   → Returns an object with selected fields: documentId, name, email, role.
  *   → Throws an Error(MessageMap.ERROR.MODULE.DATABASE) on database failure.
  * 
- * - get(email: string, documentIdCompany: string): Promise<ICreateUserDto>
+ * - get(email: string, documentId: string): Promise<ICreateUserDto>
  *   → Retrieves a user by email and company document ID.
- *   → Returns an object with selected fields: documentIdCompany, email, name, role.
+ *   → Returns an object with selected fields: documentId, email, name, role.
  *   → Throws an Error(MessageMap.ERROR.MODULE.USER.REPO.NOT_USER) if no user is found.
  *   → Throws an Error(MessageMap.ERROR.MODULE.DATABASE) on database failure.
  */
@@ -22,10 +22,10 @@ import database from "../../../config/database";
 import {
   ICreateUser,
   ICreateUserDto,
-} from "../interface/create.interface";
+} from "../interface/user.create.interface";
 
 export const create = async ({
-  documentIdCompany,
+  documentId,
   email,
   name,
   password,
@@ -34,14 +34,15 @@ export const create = async ({
   try {
     return await database.user.create({
       data: {
-        documentIdCompany,
+        documentId,
         email,
         name,
         password,
-        role
+        role,
+        isActive: true
       },
       select: {
-        documentIdCompany: true,
+        documentId: true,
         name: true,
         email: true,
         role: true,
