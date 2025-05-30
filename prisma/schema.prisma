@@ -92,18 +92,18 @@ model PaymentInvoice {
 }
 
 model User {
-  id                String         @id @default(uuid())
-  email             String
-  password          String
-  name              String
-  role              Role           @default(STAFF)
-  documentId String
-  company           Company        @relation(fields: [documentId], references: [documentId], onDelete: Cascade)
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
-  Log               Log[]
-  RefreshToken      RefreshToken[]
-  isActive          Boolean
+  id           String         @id @default(uuid())
+  email        String
+  password     String
+  name         String
+  role         Role           @default(STAFF)
+  documentId   String
+  company      Company        @relation(fields: [documentId], references: [documentId], onDelete: Cascade)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Log          Log[]
+  RefreshToken RefreshToken[]
+  isActive     Boolean
 
   @@unique([email, documentId], name: "email_documentId")
   @@index([documentId, email])
