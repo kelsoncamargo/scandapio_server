@@ -1,90 +1,113 @@
+/**
+ * @module shared.messages
+ * @description
+ * Centralized message map used for consistent error and success responses throughout the application.
+ * 
+ * Structure:
+ * - Grouped by type: ERROR and SUCCESS
+ * - Organized by domain: SHARED, MODULE, MIDDLEWARE, etc.
+ * - Nested by functional areas: REPO, SERVICE, CONTROLLER
+ * 
+ * Usage Example:
+ *   throw new AppError(MessageMap.ERROR.MODULE.USER.REPO.NOT_FOUND);
+ *   res.json({ message: MessageMap.SUCCESS.MODULE.AUTH.LOGIN });
+ * 
+ * Benefits:
+ * - Centralized and consistent messaging
+ * - Easily maintainable and extendable
+ * - Supports typed access with `as const`
+ */
 export const MessageMap = {
   ERROR: {
     SHARED: {
       TOKEN: {
         NO_SECRET: "jwt_secret_environment_variable_not_set",
-        INVALID: "invalid_token"
+        INVALID: "invalid_token",
       },
       PASSWORD: {
         NOT_UPDATE: "password_not_update",
-        NOT_ENCRYPTED: "password_not_can_was_encripted",
+        NOT_ENCRYPTED: "password_could_not_be_encrypted",
         COMPARISON_FAILED: "password_comparison_failed",
-        NOT_EXIST: "password_not_exist_in_your_user"
-      }
+        NOT_EXIST: "user_password_not_found",
+      },
     },
     MODULE: {
       DATABASE: "internal_error_database",
+
       LICENSE: {
         REPO: {
-          NOT_LICENSE: "license_not_found"
+          NOT_FOUND: "license_not_found",
         },
         SERVICE: {
-          HAS: "already_has_created"
-        }
+          ALREADY_EXISTS: "license_already_exists",
+        },
       },
+
       PLAN: {
         REPO: {
-          NOT_PLAN: "plan_not_found"
+          NOT_FOUND: "plan_not_found",
         },
         SERVICE: {
-          HAS: "already_has_created"
-        }
+          ALREADY_EXISTS: "plan_already_exists",
+        },
       },
+
       COMPANY: {
-        NOT_COMPANY: "company_not_found",
         REPO: {
-          CREATE: "documentId_already_in_use"
-        },
-        CONTROLLER: {
+          CREATE_CONFLICT: "company_documentId_already_in_use",
         },
         SERVICE: {
-          ALREADY_DOCUMENT: "document_already_in_use",
-        }
+          ALREADY_EXISTS: "company_document_already_in_use",
+        },
+        NOT_FOUND: "company_not_found",
       },
+
       USER: {
         REPO: {
-          NOT_USER: "user_not_found",
-          CREATE: "documentId_already_in_use"
-        },
-        CONTROLLER: {
+          NOT_FOUND: "user_not_found",
+          CREATE_CONFLICT: "user_documentId_already_in_use",
         },
         SERVICE: {
-          IN_USE: "email_already_in_use"
-        }
+          EMAIL_IN_USE: "user_email_already_in_use",
+        },
       },
+
       REGISTER: {
         ALREADY: {
-          COMPANY: "documentId_already_in_use",
-          USER: "email_already_in_use"
-        }
+          COMPANY: "company_documentId_already_registered",
+          USER: "user_email_already_registered",
+        },
       },
+
       AUTH: {
-        INCORRECT: "email_password_incorrect",
-        FOUND: "not_found_user"
-      }
+        INVALID_CREDENTIALS: "email_password_incorrect",
+        NOT_FOUND: "user_not_found",
+      },
     },
     MIDDLEWARE: {
       AUTH: {
-        UNAUTHORIZED: "Invalid_or_inactive_user"
+        UNAUTHORIZED: "invalid_or_inactive_user",
       },
       AUTHORIZE: {
-        FORBIDDEN: "forbidden"
+        FORBIDDEN: "forbidden_access",
       },
       COMPANY: {
-        INACTIVE: "company_inactive_or_not_found"
-      }
-    }
+        INACTIVE: "company_inactive_or_not_found",
+      },
+    },
   },
+
   SUCCESS: {
     MODULE: {
       AUTH: {
-        LOGIN: "loged_with_success"
+        LOGIN: "logged_in_successfully",
       },
       COMPANY: {
         REPO: {
-          REGISTER: "company_and_user_registred_with_sucess"
-        }
-      }
+          REGISTER: "company_and_user_registered_successfully",
+          SUSPEND: "company_suspend_with_sucess"
+        },
+      },
     },
     REPO: {
       PLAN: {
@@ -94,11 +117,11 @@ export const MessageMap = {
     },
     CONTROLLER: {
       COMPANY: {
-        REGISTER: "company_and_user_registred_with_sucess"
+        REGISTER: "company_and_user_registered_successfully",
       },
       AUTH: {
-        LOGIN: "loged_with_success"
-      }
-    }
-  }
+        LOGIN: "logged_in_successfully",
+      },
+    },
+  },
 } as const;

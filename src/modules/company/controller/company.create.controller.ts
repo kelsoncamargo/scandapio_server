@@ -18,7 +18,7 @@
  */
 
 import { Request, Response } from "express";
-import { companyService } from "../service/comapany.service";
+import { companyService } from "../service/company.service";
 
 export const create = async (
   request: Request,

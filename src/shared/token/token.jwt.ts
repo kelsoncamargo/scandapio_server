@@ -16,6 +16,7 @@
  * @returns {import("./token.jwt.interface").IJwtPayload} The decoded JWT payload.
  * @throws {Error} If the token is invalid or verification fails.
  */
+
 import jwt from "jsonwebtoken";
 import { IJwtPayload } from "./token.jwt.interface";
 import dotenv from "dotenv";
@@ -33,10 +34,13 @@ if (!secret) {
 }
 
 export const generateToken = (payload: IJwtPayload): string => {
-  return jwt.sign(payload, secret, {
-    expiresIn: "1h",
-    algorithm: "HS256",
-  });
+  return jwt.sign(
+    payload,
+    secret,
+    {
+      expiresIn: "1h",
+      algorithm: "HS256",
+    });
 };
 
 export const verifyToken = (token: string): IJwtPayload => {

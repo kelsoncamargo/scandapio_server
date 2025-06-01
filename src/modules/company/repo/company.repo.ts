@@ -1,25 +1,31 @@
 /**
- * @module repository.company
- * @description Aggregates persistence operations for company entities by delegating to specialized repository functions.
+ * CompanyRepository
  *
- * @function create
- * @param {import("../interface/company.interface").ICreatecompany} data – Payload containing details to create a new company.
- * @returns {Promise<import("../interface/company.interface").ICreatecompanyDto>} Resolves with creation result and metadata.
- * @throws {Error} Throws on database failure.
+ * Repository class responsible for Company persistence operations.
  *
- * @function get
- * @param {string} id – Unique identifier of the company to retrieve.
- * @returns {Promise<import("../interface/company.interface").IGetcompanyDto>} Resolves with company details.
- * @throws {Error} Throws if company not found or on database error.
+ * @method create(data: ICompanyCreate): Promise<ICompanyCreateDto>
+ *   – Inserts a new company record into the database.
+ *
+ * @method get(params: ICompanyGet): Promise<ICompanyGetDtoOrNull>
+ *   – Retrieves a company record by its document ID.
+ *
+ * @method update(data: ICompanyUpdate): Promise<ICompanyUpdateDto>
+ *   – Updates an existing company’s details.
+ *
+ * @method suspend(params: ICompanySuspend): Promise<ICompanySuspendDto>
+ *   – Suspends a company by setting its status to SUSPENDED.
  */
 
-
 import { create } from "./company.create.repo";
+import { suspend } from "./company.suspend.repo";
 import { get } from "./company.get.repo";
+import { update } from "./company.update.repo";
 
 class CompanyRepository {
   create = create;
   get = get;
+  update = update;
+  suspend = suspend;
 }
 
 export const companyRepository = new CompanyRepository();

@@ -1,8 +1,12 @@
 import { CompanyStatus, CompanyType } from "@prisma/client";
 
-export interface IGetCompanyDto {
+export interface ICompanyGet {
+  documentId: string;
+}
+
+export interface ICompanyGetDto {
   id: string;
-  logoUrl: string | null;
+  logoUrl?: string | null;
   name: string;
   documentId: string;
   companyType: CompanyType;
@@ -10,3 +14,5 @@ export interface IGetCompanyDto {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type ICompanyGetDtoOrNull = ICompanyGetDto | null;

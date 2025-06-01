@@ -1,26 +1,25 @@
 /**
- * @module service.company
- * @description Checks for an existing company by document ID and throws if one is already registered; otherwise returns its details.
+ * get
  *
- * @function get
- * @param {string} documentId – Unique company document identifier.
- * @returns {Promise<import("../interface/company.get.interface").IGetCompanyDto>}  
- *   Resolves with company details when no existing record is found.
- * @throws {Error}  
- *   Throws `MessageMap.ERROR.MODULE.COMPANY.SERVICE.NOT_EXIST` if a company with the given document ID already exists.
+ * Service method to retrieve a company by its document ID.
+ *
+ * @param {string} documentId                    - Unique company document identifier.
+ * @returns {Promise<ICompanyGetDto>}            - Resolves with the company data.
+ * @throws {Error}                              - Throws MessageMap.ERROR.MODULE.COMPANY.NOT_FOUND if no company is found.
  */
 
+
 import { MessageMap } from "../../../shared/messages";
-import { IGetCompanyDto } from "../interface/company.get.interface";
+import { ICompanyGet, ICompanyGetDto } from "../interface/company.get.interface";
 import { companyRepository } from "../repo/company.repo";
 
-export const get = async (
-  documentId: string
-): Promise<IGetCompanyDto | object> => {
-  const company = await companyRepository.get(documentId);
+export const get = async ({
+  documentId
+}: ICompanyGet): Promise<ICompanyGetDto> => {
+  const company = await companyRepository.get({ documentId });
 
   if (!company) {
-    throw new Error(MessageMap.ERROR.MODULE.COMPANY.NOT_COMPANY);
+    throw new Error(MessageMap.ERROR.MODULE.COMPANY.NOT_FOUND);
   }
 
   return company

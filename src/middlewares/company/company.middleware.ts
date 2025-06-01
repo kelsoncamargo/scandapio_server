@@ -1,32 +1,33 @@
 /**
  * requireCompanyActive
  *
- * Ensures that the authenticated user's company is ACTIVE.
+ * Express middleware that ensures the authenticated user’s company is ACTIVE.
  *
- * @param {AuthRequest} req   - Express request with req.user.companyId
- * @param {Response}    res   - Express response
- * @param {NextFunction} next - Next middleware
- * @returns {void}
- * @throws {403} If the company is not ACTIVE or not found.
+ * @param {Request}        req   – Express request object, expects `req.payload.documentId`.
+ * @param {Response}       res   – Express response object.
+ * @param {NextFunction}   next  – Next middleware function.
+ * @returns {Promise<void>}
+ *   – Calls `next()` if the company’s `isActive` status is ACTIVE.
+ * @throws {403}
+ *   – If the company is not ACTIVE, responds with MessageMap.ERROR.MIDDLEWARE.COMPANY.INACTIVE.
  */
 
-import { Response, NextFunction } from "express";
+
+import { Request, Response, NextFunction } from "express";
 import { CompanyStatus, Role } from "@prisma/client";
-import database from "../../config/database";
-import { AuthRequest } from "../../types/authRequest.type";
 import { MessageMap } from "../../shared/messages";
+import { companyService } from "../../modules/company/service/company.service";
 
 export async function requireCompanyActive(
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  const company = await database.company.findUnique({
-    where: { id: req.user.companyId },
-    select: { isActive: true },
-  });
+  const company = await companyService.get({
+    documentId: req.payload.documentId
+  })
 
-  if (!company || company.isActive !== CompanyStatus.ACTIVE) {
+  if (company.isActive !== CompanyStatus.ACTIVE) {
     res.status(403).json({ message: MessageMap.ERROR.MIDDLEWARE.COMPANY.INACTIVE });
     return;
   }

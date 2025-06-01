@@ -8,46 +8,46 @@ datasource db {
 }
 
 model Company {
-  id                  String               @id @default(uuid())
-  isActive            CompanyStatus        @default(INACTIVE)
-  name                String
-  documentId          String               @unique
-  companyType         CompanyType
-  logoUrl             String?
-  menus               Menu[]
-  orders              Order[]
-  sectors             Sector[]
-  users               User[]
-  catalogItems        MenuItem[]
-  Log                 Log[]
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
-  PaymentSubscription PaymentSubscription?
-  Subscription        Subscription?
+  id           String        @id @default(uuid())
+  isActive     StatusTable   @default(INACTIVE)
+  name         String
+  documentId   String        @unique
+  companyType  CompanyType
+  logoUrl      String?
+  menus        Menu[]
+  orders       Order[]
+  sectors      Sector[]
+  users        User[]
+  catalogItems MenuItem[]
+  Log          Log[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  CompanyPlan  CompanyPlan[]
 }
 
 model PlanTemplate {
-  id              String         @id @default(uuid())
-  name            License        @unique
+  id              String        @id @default(uuid())
+  name            Plan          @unique
   description     String?
   canAccessOrders Boolean
   maxUsers        Int
   maxMenus        Int
   maxItems        Int
   priceMonthly    Int
-  apiAccess       Boolean        @default(false)
-  createdAt       DateTime       @default(now())
-  Subscription    Subscription[]
+  apiAccess       Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+  CompanyPlan     CompanyPlan[]
 }
 
-model Subscription {
+model CompanyPlan {
   id        String  @id @default(uuid())
-  companyId String  @unique
+  companyId String
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  licenseName License
-  license     PlanTemplate @relation(fields: [licenseName], references: [name])
+  PlanName Plan
+  Plan     PlanTemplate @relation(fields: [PlanName], references: [name])
 
+  isActive            StatusTable           @default(INACTIVE)
   customMaxUsers      Int?
   customMaxMenus      Int?
   custommaxItems      Int?
@@ -59,12 +59,10 @@ model Subscription {
 }
 
 model PaymentSubscription {
-  id        String  @id @default(uuid())
-  companyId String  @unique
-  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  id String @id @default(uuid())
 
-  subscription String
-  Subscription Subscription @relation(fields: [subscription], references: [id])
+  companyPlan String
+  CompanyPlan CompanyPlan @relation(fields: [companyPlan], references: [id])
 
   billingStatus  BillingStatus    @default(PENDING)
   priceCents     Int
@@ -229,7 +227,7 @@ enum Role {
   VIEWER
 }
 
-enum License {
+enum Plan {
   BASIC
   PROFESSIONAL
   BUSINESS
@@ -243,7 +241,7 @@ enum BillingStatus {
   EXPIRED
 }
 
-enum CompanyStatus {
+enum StatusTable {
   ACTIVE
   INACTIVE
   SUSPENDED

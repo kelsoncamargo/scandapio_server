@@ -1,35 +1,38 @@
 /**
  * requireCompanyActiveOrOwner
  *
- * Allows access if the company is ACTIVE, or if the user.role is OWNER when inactive.
+ * Express middleware that ensures the authenticated user’s company is ACTIVE,
+ * or allows access if the user’s role is OWNER even when the company is inactive.
  *
- * @param {AuthRequest} req   - Express request with req.user.companyId and req.user.role
- * @param {Response}    res   - Express response
- * @param {NextFunction} next - Next middleware
- * @returns {void}
- * @throws {403} If the company is INACTIVE and user is not OWNER, or not found.
+ * @param {Request}        req   – Express request object, expects `req.payload.documentId` and `req.payload.role`.
+ * @param {Response}       res   – Express response object.
+ * @param {NextFunction}   next  – Next middleware function.
+ * @returns {Promise<void>}
+ *   – Calls `next()` if the company is ACTIVE or the user’s role is OWNER.
+ * @throws {403}
+ *   – If the company is not ACTIVE and the user’s role is not OWNER, responds with MessageMap.ERROR.MIDDLEWARE.COMPANY.INACTIVE.
  */
 
+
 import { CompanyStatus, Role } from "@prisma/client";
-import { AuthRequest } from "aws-sdk/clients/appfabric";
-import { NextFunction } from "express";
-import database from "../../config/database";
+import { Request, Response, NextFunction } from "express";
+import { companyService } from "../../modules/company/service/company.service";
+import { MessageMap } from "../../shared/messages";
+
 
 export async function requireCompanyActiveOrOwner(
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  const company = await database.company.findUnique({
-    where: { id: req.user.companyId },
-    select: { isActive: true },
-  });
 
-  if (!company) {
-    return res.status(404).json({ message: "Company not found." });
-  }
-  if (company.isActive !== CompanyStatus.ACTIVE && req.user.role !== Role.OWNER) {
-    return res.status(403).json({ message: "Company inactive." });
+  const company = await companyService.get({
+    documentId: req.payload.documentId
+  })
+
+  if (company.isActive !== CompanyStatus.ACTIVE && req.payload.role !== Role.OWNER) {
+    res.status(403).json({ message: MessageMap.ERROR.MIDDLEWARE.COMPANY.INACTIVE });
+    return;
   }
 
   next();

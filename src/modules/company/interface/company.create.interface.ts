@@ -1,11 +1,11 @@
 import { CompanyType } from "@prisma/client";
 
-export interface IRegisterCompany {
+export interface ICompanyCreate {
   name: string;
   documentId: string;
   companyType: CompanyType;
 }
 
-export interface IRegisterCompanyDto {
+export interface ICompanyCreateDto {
   message: string;
 }

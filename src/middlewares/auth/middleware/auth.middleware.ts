@@ -1,19 +1,30 @@
-// src/auth/middleware/authenticate.ts
+/**
+ * authenticate
+ *
+ * Express middleware that verifies a JWT from the `accessToken` cookie, 
+ * ensures the user is active, and attaches the decoded payload to `req.user`.
+ *
+ * @param {AuthRequest} req     – Request object extended with `user: IJwtPayload`.
+ *                               Expects `req.cookies.accessToken` to contain the JWT.
+ * @param {Response}    res     – Express response object.
+ * @param {NextFunction} next   – Next middleware function in the stack.
+ * @returns {Promise<void>}
+ *   – Calls `next()` if the token is valid and the user is active.
+ * @throws {Error}
+ *   – Responds with 401 Unauthorized and 
+ *     `{ message: MessageMap.ERROR.MIDDLEWARE.AUTH.UNAUTHORIZED }` if:
+ *       • No token is present.
+ *       • The token is invalid or expired.
+ *       • The user is not found or is inactive.
+ */
+
 
 import { Request, Response, NextFunction } from "express";
 import { validateToken } from "../service/auth.service";
 import { MessageMap } from "../../../shared/messages";
-import { IJwtPayload } from "../../../shared/token/token.jwt.interface";
-
-/**
- * Express middleware that checks for a JWT in HttpOnly cookie 'accessToken',
- * validates it and attaches the decoded payload to `req.user`.
- */
-
-type AuthRequest = Request & { user: IJwtPayload };
 
 export async function authenticate(
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
@@ -25,11 +36,9 @@ export async function authenticate(
         .json({ message: MessageMap.ERROR.MIDDLEWARE.AUTH.UNAUTHORIZED });
     }
 
-    // Validate token and retrieve payload
     const payload = await validateToken(token);
 
-    // Attach payload (id, email, role, companyId, etc.) to request
-    req.user = payload;
+    req.payload = payload;
 
     next();
   } catch {

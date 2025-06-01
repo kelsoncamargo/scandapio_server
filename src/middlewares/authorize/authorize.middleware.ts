@@ -1,27 +1,27 @@
 /**
  * authorize
  *
- * Middleware factory that checks whether req.user.role
+ * Middleware factory that checks if the authenticated user’s role
  * has the required permission.
  *
- * @param {Permission} required            - Permission in the format "resource:action"
- * @returns {import("express").RequestHandler}  
- *   Express middleware function (req, res, next).
- * @throws {403}                          - If req.user.role does not have the required permission.
- *
- * @typedef {import("express").Request & { user: IJwtPayload }} AuthRequest
+ * @param {Permission} required
+ *   – Permission in the format "resource:action".
+ * @returns {import("express").RequestHandler}
+ *   – Express middleware function (req, res, next).
+ * @throws {403}
+ *   – If the user’s role does not include the required permission,
+ *     responds with MessageMap.ERROR.MIDDLEWARE.AUTHORIZE.FORBIDDEN.
  */
 
-import { Response, NextFunction } from "express";
-import { Permission, rolePermissions } from "../permissions/permissions";
+import { Request, Response, NextFunction } from "express";
+import { Permission, rolePermissions } from "../permissions/permissions.middleware";
 import { MessageMap } from "../../shared/messages";
-import { AuthRequest } from "../../types/authRequest.type";
 
 export function authorize(required: Permission) {
   const [requiredResource, requiredAction] = required.split(":");
 
-  return (req: AuthRequest, res: Response, next: NextFunction): void => {
-    const perms = rolePermissions[req.user.role] ?? [];
+  return (req: Request, res: Response, next: NextFunction): void => {
+    const perms = rolePermissions[req.payload.role] ?? [];
 
     const allowed = perms.some((perm) => {
       const [permResource, permAction] = perm.split(":");
