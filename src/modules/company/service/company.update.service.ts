@@ -7,7 +7,7 @@
  *   - `documentId` (string): Current unique company document identifier.
  *   - `name` (string | undefined): New company name (optional).
  *   - `companyType` (string | undefined): New company type/category (optional).
- *   - `logoUrl` (string | undefined): New logo URL (optional).
+ *   - `logoUrl` (string | null | undefined): New logo URL (optional).
  *   - `newDocumentId` (string | undefined): New documentId if renaming (optional).
  * @returns {Promise<ICompanyUpdateDto | Error>}
  *   - Resolves with the updated company record.
@@ -32,7 +32,7 @@ export const update = async ({
   const company: ICompanyGetDto = await companyService.get({ documentId });
 
   if (!company) {
-    return new Error(MessageMap.ERROR.MODULE.COMPANY.NOT_FOUND);
+    return new Error(MessageMap.ERROR.COMPANY.NOT_FOUND);
   }
 
   return await updateRepo({

@@ -1,127 +1,94 @@
 /**
  * @module shared.messages
- * @description
- * Centralized message map used for consistent error and success responses throughout the application.
- * 
- * Structure:
- * - Grouped by type: ERROR and SUCCESS
- * - Organized by domain: SHARED, MODULE, MIDDLEWARE, etc.
- * - Nested by functional areas: REPO, SERVICE, CONTROLLER
- * 
- * Usage Example:
- *   throw new AppError(MessageMap.ERROR.MODULE.USER.REPO.NOT_FOUND);
- *   res.json({ message: MessageMap.SUCCESS.MODULE.AUTH.LOGIN });
- * 
- * Benefits:
- * - Centralized and consistent messaging
- * - Easily maintainable and extendable
- * - Supports typed access with `as const`
+ * @description Centralized message map for consistent error and success responses.
+ * Structure: Grouped by type (ERROR, SUCCESS), with reusable fragments for entities, actions, and states.
+ * Usage: throw new AppError(MessageMap.ERROR.USER.NOT_FOUND);
+ * Benefits: Compact, reusable, maintainable, type-safe with as const.
  */
+
+const MessFrag = {
+  ENTITIES: {
+    COMPANY: "company",
+    USER: "user",
+    PLAN: "plan",
+    LICENSE: "license",
+    PASSWORD: "password",
+    TOKEN: "token",
+  },
+  ACTIONS: {
+    REGISTER: "registered",
+    LOGIN: "logged_in",
+    SUSPEND: "suspended",
+    UPDATE: "updated",
+    ENCRYPT: "encrypted",
+    COMPARE: "compared",
+    REMOVE: "removed"
+  },
+  STATES: {
+    NOT_FOUND: "not_found",
+    EXISTS: "already_exists",
+    IN_USE: "in_use",
+    INVALID: "invalid",
+    INACTIVE: "inactive",
+    FORBIDDEN: "forbidden",
+    INCORRECT: "incorrect",
+  },
+} as const;
+
 export const MessageMap = {
   ERROR: {
-    SHARED: {
-      TOKEN: {
-        NO_SECRET: "jwt_secret_environment_variable_not_set",
-        INVALID: "invalid_token",
-      },
-      PASSWORD: {
-        NOT_UPDATE: "password_not_update",
-        NOT_ENCRYPTED: "password_could_not_be_encrypted",
-        COMPARISON_FAILED: "password_comparison_failed",
-        NOT_EXIST: "user_password_not_found",
-      },
+    DATABASE: "internal_error_database",
+    TOKEN: {
+      NO_SECRET: `${MessFrag.ENTITIES.TOKEN}_secret_not_set`,
+      INVALID: `${MessFrag.ENTITIES.TOKEN}_${MessFrag.STATES.INVALID}`,
     },
-    MODULE: {
-      DATABASE: "internal_error_database",
-
-      LICENSE: {
-        REPO: {
-          NOT_FOUND: "license_not_found",
-        },
-        SERVICE: {
-          ALREADY_EXISTS: "license_already_exists",
-        },
-      },
-
-      PLAN: {
-        REPO: {
-          NOT_FOUND: "plan_not_found",
-        },
-        SERVICE: {
-          ALREADY_EXISTS: "plan_already_exists",
-        },
-      },
-
-      COMPANY: {
-        REPO: {
-          CREATE_CONFLICT: "company_documentId_already_in_use",
-        },
-        SERVICE: {
-          ALREADY_EXISTS: "company_document_already_in_use",
-        },
-        NOT_FOUND: "company_not_found",
-      },
-
-      USER: {
-        REPO: {
-          NOT_FOUND: "user_not_found",
-          CREATE_CONFLICT: "user_documentId_already_in_use",
-        },
-        SERVICE: {
-          EMAIL_IN_USE: "user_email_already_in_use",
-        },
-      },
-
-      REGISTER: {
-        ALREADY: {
-          COMPANY: "company_documentId_already_registered",
-          USER: "user_email_already_registered",
-        },
-      },
-
-      AUTH: {
-        INVALID_CREDENTIALS: "email_password_incorrect",
-        NOT_FOUND: "user_not_found",
-      },
+    PASSWORD: {
+      NOT_UPDATE: `${MessFrag.ENTITIES.PASSWORD}_not_${MessFrag.ACTIONS.UPDATE}`,
+      NOT_ENCRYPTED: `${MessFrag.ENTITIES.PASSWORD}_not_${MessFrag.ACTIONS.ENCRYPT}`,
+      COMPARISON_FAILED: `${MessFrag.ENTITIES.PASSWORD}_${MessFrag.ACTIONS.COMPARE}_failed`,
+      NOT_FOUND: `${MessFrag.ENTITIES.PASSWORD}_${MessFrag.STATES.NOT_FOUND}`,
     },
-    MIDDLEWARE: {
-      AUTH: {
-        UNAUTHORIZED: "invalid_or_inactive_user",
-      },
-      AUTHORIZE: {
-        FORBIDDEN: "forbidden_access",
-      },
-      COMPANY: {
-        INACTIVE: "company_inactive_or_not_found",
-      },
+    LICENSE: {
+      NOT_FOUND: `${MessFrag.ENTITIES.LICENSE}_${MessFrag.STATES.NOT_FOUND}`,
+      EXISTS: `${MessFrag.ENTITIES.LICENSE}_${MessFrag.STATES.EXISTS}`,
+    },
+    PLAN: {
+      NOT_FOUND: `${MessFrag.ENTITIES.PLAN}_${MessFrag.STATES.NOT_FOUND}`,
+      EXISTS: `${MessFrag.ENTITIES.PLAN}_${MessFrag.STATES.EXISTS}`,
+    },
+    COMPANY: {
+      NOT_FOUND: `${MessFrag.ENTITIES.COMPANY}_${MessFrag.STATES.NOT_FOUND}`,
+      IN_USE: `${MessFrag.ENTITIES.COMPANY}_document_${MessFrag.STATES.IN_USE}`,
+      INACTIVE: `${MessFrag.ENTITIES.COMPANY}_${MessFrag.STATES.INACTIVE}_or_${MessFrag.STATES.NOT_FOUND}`,
+      REGISTERED: `${MessFrag.ENTITIES.COMPANY}_document_already_${MessFrag.ACTIONS.REGISTER}`,
+    },
+    USER: {
+      NOT_FOUND: `${MessFrag.ENTITIES.USER}_${MessFrag.STATES.NOT_FOUND}`,
+      IN_USE: `${MessFrag.ENTITIES.USER}_email_${MessFrag.STATES.IN_USE}`,
+      REGISTERED: `${MessFrag.ENTITIES.USER}_email_already_${MessFrag.ACTIONS.REGISTER}`,
+      INVALID: `${MessFrag.ENTITIES.USER}_${MessFrag.STATES.INVALID}_or_${MessFrag.STATES.INACTIVE}`,
+      REMOVE: `${MessFrag.ENTITIES.USER}_${MessFrag.ACTIONS.REMOVE}`
+    },
+    AUTH: {
+      INVALID_CREDENTIALS: `email_${MessFrag.ENTITIES.PASSWORD}_${MessFrag.STATES.INCORRECT}`,
+    },
+    AUTHORIZE: {
+      FORBIDDEN: `${MessFrag.STATES.FORBIDDEN}_access`,
     },
   },
-
   SUCCESS: {
-    MODULE: {
-      AUTH: {
-        LOGIN: "logged_in_successfully",
-      },
-      COMPANY: {
-        REPO: {
-          REGISTER: "company_and_user_registered_successfully",
-          SUSPEND: "company_suspend_with_sucess"
-        },
-      },
+    REGISTER: `${MessFrag.ACTIONS.REGISTER}_successfully`,
+    LOGIN: `${MessFrag.ACTIONS.LOGIN}_successfully`,
+    COMPANY: {
+      REGISTER: `${MessFrag.ENTITIES.COMPANY}_and_${MessFrag.ENTITIES.USER}_${MessFrag.ACTIONS.REGISTER}_successfully`,
+      SUSPEND: `${MessFrag.ENTITIES.COMPANY}_${MessFrag.ACTIONS.SUSPEND}_successfully`,
     },
-    REPO: {
-      PLAN: {
-        REGISTER: "plan_registered_successfully",
-      },
-      REGISTER: "registered_successfully",
+    PLAN: {
+      REGISTER: `${MessFrag.ENTITIES.PLAN}_${MessFrag.ACTIONS.REGISTER}_successfully`,
     },
-    CONTROLLER: {
-      COMPANY: {
-        REGISTER: "company_and_user_registered_successfully",
-      },
-      AUTH: {
-        LOGIN: "logged_in_successfully",
-      },
-    },
+    USER: {
+      REMOVED: `${MessFrag.ENTITIES.USER}_${MessFrag.ACTIONS.REMOVE}`,
+      SUSPEND: `${MessFrag.ENTITIES.USER}_${MessFrag.ACTIONS.SUSPEND}_successfully`,
+    }
   },
 } as const;

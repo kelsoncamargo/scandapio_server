@@ -27,8 +27,8 @@ export const suspend = async ({ documentId }: ICompanySuspend): Promise<ICompany
       }
     });
 
-    return { message: MessageMap.SUCCESS.MODULE.COMPANY.REPO.SUSPEND };
+    return { message: MessageMap.SUCCESS.COMPANY.SUSPEND };
   } catch (err) {
-    throw new Error(MessageMap.ERROR.MODULE.DATABASE);
+    throw new Error(MessageMap.ERROR.DATABASE);
   }
 }

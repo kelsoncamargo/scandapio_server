@@ -1,6 +1,6 @@
 import { Role } from "@prisma/client";
 
-export interface ICreateUser {
+export interface IUserCreate {
   documentId: string;
   email: string;
   password: string;
@@ -8,7 +8,8 @@ export interface ICreateUser {
   name: string;
 };
 
-export interface ICreateUserDto {
+export interface IUserCreateDto {
+  id: string;
   documentId: string;
   name: string;
   email: string;

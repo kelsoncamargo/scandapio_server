@@ -1,17 +1,20 @@
 import { Role } from "@prisma/client";
 
-export interface IUserGet {
+export interface IUserUpdate {
   documentId: string;
   email: string;
+  newEmail?: string;
+  password?: string;
+  role?: Role;
+  name?: string;
 };
 
-export interface IUserGetDto {
+export interface IUserUpdateDto {
   id: string;
   documentId: string;
   name: string;
   email: string;
   role: Role;
-  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 };

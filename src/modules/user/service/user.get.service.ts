@@ -3,10 +3,10 @@
  *
  * Retrieves a user by company document ID and email.
  *
- * @param {IGetUser} params                        - Lookup parameters.
+ * @param {IUserGet} params                        - Lookup parameters.
  * @param {string}    params.documentId     - Company's document ID.
  * @param {string}    params.email                 - User's email address.
- * @returns {Promise<IGetUserDto>}                 - Resolves to an object containing:
+ * @returns {Promise<IUserGetDto>}                 - Resolves to an object containing:
  *                                                    • documentId: string  
  *                                                    • email: string  
  *                                                    • name: string  
@@ -18,17 +18,17 @@
  */
 
 import { userRepository } from "../repo/user.repo";
-import { IGetUser, IGetUserDto } from "../interface/user.get.interface";
+import { IUserGet, IUserGetDto } from "../interface/user.get.interface";
 import { MessageMap } from "../../../shared/messages";
 
 export const get = async ({
   documentId,
   email
-}: IGetUser): Promise<IGetUserDto> => {
+}: IUserGet): Promise<IUserGetDto> => {
   const user = await userRepository.get({ documentId, email });
 
   if (!user) {
-    throw new Error(`${MessageMap.ERROR.MODULE.USER.REPO.NOT_USER}`);
+    throw new Error(`${MessageMap.ERROR.USER.NOT_FOUND}`);
   }
 
   return user;

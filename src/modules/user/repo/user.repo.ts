@@ -1,25 +1,37 @@
 /**
- * @module repository.user
- * @description Aggregates persistence operations for User entities by delegating to specialized repository functions.
+ * UserRepository
  *
- * @function create
- * @param {import("../interface/user.interface").ICreateUser} data – Payload containing details to create a new user.
- * @returns {Promise<import("../interface/user.interface").ICreateUserDto>} Resolves with creation result and metadata.
- * @throws {Error} Throws on database failure.
+ * Repository class responsible for User persistence operations.
  *
- * @function get
- * @param {string} id – Unique identifier of the user to retrieve.
- * @returns {Promise<import("../interface/user.interface").IGetUserDto>} Resolves with user details.
- * @throws {Error} Throws if user not found or on database error.
+ * @method create(params: ICreateUser): Promise<User>
+ *   – Creates a new user in the database.
+ *
+ * @method get(params: IGetUser): Promise<User | null>
+ *   – Retrieves a user by email and company document ID.
+ *
+ * @method update(params: IUpdateUser): Promise<User>
+ *   – Updates an existing user’s details.
+ *
+ * @method suspend(params: ISuspendUser): Promise<User>
+ *   – Suspends a user by updating their active status.
+ *
+ * @method remove(params: IRemoveUser): Promise<User>
+ *   – Deletes a user by email and company document ID.
  */
 
 
+import { suspend } from "../service/user.suspend.service";
 import { create } from "./user.create.repo";
 import { get } from "./user.get.repo";
+import { remove } from "./user.remove.repo";
+import { update } from "./user.update.repo";
 
 class UserRepository {
   create = create;
   get = get;
+  update = update;
+  suspend = suspend;
+  remove = remove;
 }
 
 export const userRepository = new UserRepository();

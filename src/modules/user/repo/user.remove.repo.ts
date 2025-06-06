@@ -1,13 +1,13 @@
 /**
- * get
+ * remove
  *
- * Repository method to retrieve a user by email and company document ID.
+ * Repository method to delete a user by email and company document ID.
  *
- * @param {IUserGet} params
+ * @param {IUserRemove} params
  *   - `documentId` (string): Company document identifier.
  *   - `email` (string): User’s email address.
- * @returns {Promise<User | null>}
- *   - Resolves with the User record if found, otherwise null.
+ * @returns {Promise<User>}
+ *   - Resolves with the deleted User record.
  * @throws {Error}
  *   - Throws MessageMap.ERROR.MODULE.DATABASE on any database failure.
  */
@@ -16,22 +16,22 @@ import { User } from "@prisma/client";
 import { MessageMap } from "../../../shared/messages";
 import database from "../../../config/database";
 import {
-  IUserGet,
-} from "../interface/user.get.interface";
+  IUserRemove,
+} from "../interface/user.remove.interface";
 
-export const get = async ({
+export const remove = async ({
   documentId,
   email
-}: IUserGet): Promise<User | null> => {
+}: IUserRemove): Promise<User> => {
   try {
-    return await database.user.findUnique({
+    return await database.user.delete({
       where: {
         email_documentId: {
-          email,
-          documentId
+          documentId,
+          email
         }
       }
-    })
+    });
   } catch (err) {
     throw new Error(`${MessageMap.ERROR.DATABASE}`);
   }
